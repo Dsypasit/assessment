@@ -98,3 +98,58 @@ func TestAddExpense(t *testing.T) {
 	assert.NoError(t, err)
 
 }
+
+func TestGetExpenseByID(t *testing.T) {
+	body := bytes.NewBufferString(`
+	{
+	"title": "strawberry smoothie 2",
+	"amount": 7,
+	"note": "night market promotion discount 100 bath", 
+	"tags": ["food"]
+}
+	`)
+
+	eh := echo.New()
+	InitDB()
+	go func(e *echo.Echo) {
+		CreateRoute(e)
+		e.Start(":5000")
+	}(eh)
+
+	for {
+		conn, err := net.DialTimeout("tcp", "localhost:5000", 30*time.Second)
+		if err != nil {
+			log.Println(err)
+		}
+
+		if conn != nil {
+			conn.Close()
+			break
+		}
+	}
+
+	var expected Expense
+	res := request(http.MethodPost, url("expenses"), body)
+	err := res.Decode(&expected)
+	assert.Nil(t, err)
+	assert.Equal(t, http.StatusCreated, res.StatusCode)
+
+	var result Expense
+	res = request(http.MethodGet, url("expenses", strconv.Itoa(expected.ID)), body)
+	err = res.Decode(&result)
+	assert.Nil(t, err)
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+
+	assert.Equal(t, expected.ID, result.ID)
+	assert.Equal(t, expected.Title, result.Title)
+	assert.Equal(t, expected.Amount, result.Amount)
+	assert.Equal(t, expected.Note, result.Note)
+	assert.ElementsMatch(t, expected.Tags, result.Tags)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	err = eh.Shutdown(ctx)
+	assert.NoError(t, err)
+
+}
+
