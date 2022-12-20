@@ -12,4 +12,5 @@ type Expense struct {
 
 func CreateRoute(app *echo.Echo) {
 	app.POST("/expenses", AddExpense)
+	app.GET("/expenses/:id", GetExpenseByID)
 }
