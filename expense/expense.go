@@ -11,4 +11,5 @@ type Expense struct {
 }
 
 func CreateRoute(app *echo.Echo) {
+	app.GET("/expenses", GetExpenses)
 }

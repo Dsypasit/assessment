@@ -11,5 +11,7 @@ func main() {
 	expense.InitDB()
 	e := echo.New()
 
+	expense.CreateRoute(e)
+
 	e.Logger.Fatal(e.Start(os.Getenv("PORT")))
 }
