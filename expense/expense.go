@@ -10,3 +10,5 @@ type Expense struct {
 	Title  string   `json:"title"`
 }
 
+func CreateRoute(app *echo.Echo) {
+}
