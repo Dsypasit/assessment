@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/lib/pq"
 )
 
 func GetExpenseByID(c echo.Context) error {
@@ -16,7 +17,7 @@ func GetExpenseByID(c echo.Context) error {
 	}
 
 	var expense Expense
-	err = st.QueryRow(id).Scan(&expense.ID, &expense.Title, &expense.Amount, &expense.Note, &expense.Tags)
+	err = st.QueryRow(id).Scan(&expense.ID, &expense.Title, &expense.Amount, &expense.Note, pq.Array(&expense.Tags))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
