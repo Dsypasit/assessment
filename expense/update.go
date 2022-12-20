@@ -2,7 +2,6 @@ package expense
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/labstack/echo/v4"
 	"github.com/lib/pq"
@@ -31,8 +30,6 @@ func UpdateExpense(c echo.Context) error {
 	} else if rowAffected == 0 {
 		return c.JSON(http.StatusBadRequest, "invalid id")
 	}
-
-	ex.ID, _ = strconv.Atoi(id)
 
 	return c.JSON(http.StatusOK, ex)
 }
