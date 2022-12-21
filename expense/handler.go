@@ -18,3 +18,10 @@ func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 		return next(c)
 	}
 }
+
+func CreateRoute(app *echo.Echo) {
+	app.POST("/expenses", AddExpense)
+	app.GET("/expenses/:id", GetExpenseByID)
+	app.PUT("/expenses/:id", UpdateExpense)
+	app.GET("/expenses", GetExpenses)
+}
