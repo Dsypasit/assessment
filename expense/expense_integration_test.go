@@ -1,4 +1,4 @@
-//go:build integration
+// go:build integration
 
 package expense
 
@@ -18,6 +18,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 )
+
+const url_test = "http://localhost:5000"
 
 type Response struct {
 	*http.Response
@@ -71,7 +73,7 @@ func TestAddExpense(t *testing.T) {
 	}(eh)
 
 	for {
-		conn, err := net.DialTimeout("tcp", "localhost:5000", 30*time.Second)
+		conn, err := net.DialTimeout("tcp", url_test, 30*time.Second)
 		if err != nil {
 			log.Println(err)
 		}
@@ -119,7 +121,7 @@ func TestGetExpenseByID(t *testing.T) {
 	}(eh)
 
 	for {
-		conn, err := net.DialTimeout("tcp", "localhost:5000", 30*time.Second)
+		conn, err := net.DialTimeout("tcp", url_test, 30*time.Second)
 		if err != nil {
 			log.Println(err)
 		}
@@ -182,7 +184,7 @@ func TestUpdateExpense(t *testing.T) {
 	}(eh)
 
 	for {
-		conn, err := net.DialTimeout("tcp", "localhost:5000", 30*time.Second)
+		conn, err := net.DialTimeout("tcp", url_test, 30*time.Second)
 		if err != nil {
 			log.Println(err)
 		}
@@ -236,7 +238,7 @@ func TestGetAllExpense(t *testing.T) {
 	}(eh)
 
 	for {
-		conn, err := net.DialTimeout("tcp", "localhost:5000", 30*time.Second)
+		conn, err := net.DialTimeout("tcp", url_test, 30*time.Second)
 		if err != nil {
 			log.Println(err)
 		}
