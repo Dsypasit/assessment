@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"log"
-	"net/http"
 	"os"
 
 	"github.com/lib/pq"
@@ -14,6 +13,12 @@ import (
 var db *sql.DB
 var err error
 
+type DBError struct {
+	error
+	s      string
+	status int
+}
+
 type db_temp struct {
 	DB
 	db *sql.DB
@@ -22,7 +27,7 @@ type db_temp struct {
 type DB interface {
 	GetAll() ([]Expense, error)
 	GetByID(id int) (Expense, error)
-	Update(id int) (Expense, error)
+	Update(id int, ex Expense) error
 	Create() (Expense, error)
 }
 
@@ -113,4 +118,23 @@ func (db db_temp) GetByID(id int) (Expense, error) {
 	}
 
 	return expense, nil
+}
+
+func (db db_temp) Update(id int, ex Expense) error {
+	st, err := db.db.Prepare("UPDATE expenses SET title=$2, amount=$3, note=$4, tags=$5 WHERE id=$1")
+	if err != nil {
+		return errors.New("can't prepare statement")
+	}
+
+	result, err := st.Exec(id, &ex.Title, &ex.Amount, &ex.Note, pq.Array(&ex.Tags))
+	if err != nil {
+		return errors.New("can't update information")
+	}
+
+	if rowAffected, err := result.RowsAffected(); err != nil {
+		return errors.New("can't get row affect")
+	} else if rowAffected == 0 {
+		return errors.New("id missmatch")
+	}
+	return nil
 }
