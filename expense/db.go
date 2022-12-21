@@ -100,3 +100,17 @@ func (db db_temp) GetAll() ([]Expense, error) {
 	return expenses, nil
 }
 
+func (db db_temp) GetByID(id int) (Expense, error) {
+	st, err := db.db.Prepare("SELECT * FROM expenses WHERE id=$1")
+	if err != nil {
+		return Expense{}, errors.New("can't prepare db statement")
+	}
+
+	var expense Expense
+	err = st.QueryRow(id).Scan(&expense.ID, &expense.Title, &expense.Amount, &expense.Note, pq.Array(&expense.Tags))
+	if err != nil {
+		return Expense{}, errors.New("can't query information")
+	}
+
+	return expense, nil
+}
