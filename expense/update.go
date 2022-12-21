@@ -22,6 +22,7 @@ func (h Handler) UpdateExpense(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
+	ex.ID = id
 
 	return c.JSON(http.StatusOK, ex)
 }

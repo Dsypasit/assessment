@@ -1,4 +1,4 @@
-// go:build integration
+//go:build integration
 
 package expense
 
@@ -19,7 +19,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const url_test = "http://localhost:5000"
+const url_test = "localhost:5000"
 
 type Response struct {
 	*http.Response
@@ -66,9 +66,11 @@ func TestAddExpense(t *testing.T) {
 `)
 
 	eh := echo.New()
-	InitDB()
+	db := InitDB()
+	handler := CreateHandler(db)
 	go func(e *echo.Echo) {
-		CreateRoute(e)
+
+		CreateRoute(e, handler)
 		e.Start(":5000")
 	}(eh)
 
@@ -105,18 +107,20 @@ func TestAddExpense(t *testing.T) {
 
 func TestGetExpenseByID(t *testing.T) {
 	body := bytes.NewBufferString(`
-	{
-	"title": "strawberry smoothie 2",
-	"amount": 7,
-	"note": "night market promotion discount 100 bath", 
-	"tags": ["food"]
+{
+"title": "strawberry smoothie 2",
+"amount": 7,
+"note": "night market promotion discount 100 bath",
+"tags": ["food"]
 }
-	`)
+`)
 
 	eh := echo.New()
-	InitDB()
+	db := InitDB()
+	handler := CreateHandler(db)
 	go func(e *echo.Echo) {
-		CreateRoute(e)
+
+		CreateRoute(e, handler)
 		e.Start(":5000")
 	}(eh)
 
@@ -159,27 +163,29 @@ func TestGetExpenseByID(t *testing.T) {
 
 func TestUpdateExpense(t *testing.T) {
 	body := bytes.NewBufferString(`
-	{
-	"title": "strawberry smoothie 2",
-	"amount": 7,
-	"note": "night market promotion discount 100 bath", 
-	"tags": ["food"]
+{
+"title": "strawberry smoothie 2",
+"amount": 7,
+"note": "night market promotion discount 100 bath",
+"tags": ["food"]
 }
-	`)
+`)
 
 	updateBody := bytes.NewBufferString(`
 {
-    "title": "apple smoothie",
-    "amount": 89,
-    "note": "no discount",
-    "tags": ["beverage"]
+"title": "apple smoothie",
+"amount": 89,
+"note": "no discount",
+"tags": ["beverage"]
 }
-	`)
+`)
 
 	eh := echo.New()
-	InitDB()
+	db := InitDB()
+	handler := CreateHandler(db)
 	go func(e *echo.Echo) {
-		CreateRoute(e)
+
+		CreateRoute(e, handler)
 		e.Start(":5000")
 	}(eh)
 
@@ -222,18 +228,20 @@ func TestUpdateExpense(t *testing.T) {
 
 func TestGetAllExpense(t *testing.T) {
 	body := bytes.NewBufferString(`
-	{
-	"title": "strawberry smoothie 2",
-	"amount": 7,
-	"note": "night market promotion discount 100 bath", 
-	"tags": ["food"]
+{
+"title": "strawberry smoothie 2",
+"amount": 7,
+"note": "night market promotion discount 100 bath",
+"tags": ["food"]
 }
-	`)
+`)
 
 	eh := echo.New()
-	InitDB()
+	db := InitDB()
+	handler := CreateHandler(db)
 	go func(e *echo.Echo) {
-		CreateRoute(e)
+
+		CreateRoute(e, handler)
 		e.Start(":5000")
 	}(eh)
 
