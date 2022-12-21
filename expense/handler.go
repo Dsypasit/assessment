@@ -30,7 +30,7 @@ func CreateHandler(db DB) Handler {
 }
 
 func CreateRoute(app *echo.Echo, handler Handler) {
-	app.POST("/expenses", AddExpense)
+	app.POST("/expenses", handler.AddExpense)
 	app.GET("/expenses/:id", handler.GetExpenseByID)
 	app.PUT("/expenses/:id", handler.UpdateExpense)
 	app.GET("/expenses", handler.GetExpenses)

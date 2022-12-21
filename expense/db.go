@@ -7,7 +7,6 @@ import (
 	"os"
 
 	"github.com/lib/pq"
-	_ "github.com/lib/pq"
 )
 
 var db *sql.DB
@@ -28,7 +27,7 @@ type DB interface {
 	GetAll() ([]Expense, error)
 	GetByID(id int) (Expense, error)
 	Update(id int, ex Expense) error
-	Create() (Expense, error)
+	Create(ex *Expense) error
 }
 
 func InitDB() {
@@ -135,6 +134,20 @@ func (db db_temp) Update(id int, ex Expense) error {
 		return errors.New("can't get row affect")
 	} else if rowAffected == 0 {
 		return errors.New("id missmatch")
+	}
+	return nil
+}
+
+func (db db_temp) Create(ex *Expense) error {
+	st, err := db.db.Prepare("INSERT INTO expenses (title, amount, note, tags) VALUES ($1, $2, $3, $4) RETURNING id")
+	if err != nil {
+		return errors.New("can't prepare statement")
+	}
+
+	row := st.QueryRow(&ex.Title, &ex.Amount, &ex.Note, pq.Array(&ex.Tags))
+
+	if err := row.Scan(&ex.ID); err != nil {
+		return errors.New("can't insert information")
 	}
 	return nil
 }
