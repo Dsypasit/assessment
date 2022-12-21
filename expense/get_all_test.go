@@ -1,8 +1,9 @@
-//go:build handler
+// go:build unit
 
 package expense
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -34,18 +35,26 @@ func initMockDB() DB {
 func TestGetExpenses(t *testing.T) {
 	db := initMockDB()
 	h := CreateHandler(db)
-
+	expected := []Expense{
+		{
+			ID:     1,
+			Amount: 89,
+			Note:   "no discount",
+			Tags:   []string{"beverage"},
+			Title:  "apple smoothie",
+		},
+	}
 	e := echo.New()
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
-	c.SetPath("/users/:email")
-	c.SetParamNames("email")
-	c.SetParamValues("jon@labstack.com")
 
 	// Assertions
 	if assert.NoError(t, h.GetExpenses(c)) {
+		var result []Expense
+		json.NewDecoder(rec.Body).Decode(&result)
 		assert.Equal(t, http.StatusOK, rec.Code)
+		assert.ElementsMatch(t, expected, result)
 	}
 
 }
