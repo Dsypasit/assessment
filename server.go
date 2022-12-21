@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	db := expense.InitDBTemp()
+	db := expense.InitDB()
 	handler := expense.CreateHandler(db)
 
 	e := echo.New()
