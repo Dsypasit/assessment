@@ -24,9 +24,9 @@ func main() {
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, os.Interrupt, syscall.SIGTERM)
 
-	log.Println("Server up by port 2565")
+	log.Printf("Server up by port %v\n", os.Getenv("PORT"))
 	go func() {
-		if err := e.Start(":2565"); err != nil {
+		if err := e.Start(os.Getenv("PORT")); err != nil {
 			e.Logger.Fatal("shutdown server")
 		}
 	}()
