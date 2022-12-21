@@ -2,6 +2,7 @@ package expense
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 	"github.com/lib/pq"
@@ -9,6 +10,9 @@ import (
 
 func UpdateExpense(c echo.Context) error {
 	id := c.Param("id")
+	if _, err := strconv.Atoi(id); err != nil {
+		return c.JSON(http.StatusBadRequest, "invalid id")
+	}
 
 	var ex Expense
 	if err := c.Bind(&ex); err != nil {
