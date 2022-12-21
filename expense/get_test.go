@@ -25,14 +25,12 @@ func (m MockDB) GetByID(id int) (Expense, error) {
 func TestGetExpenseByID(t *testing.T) {
 	db := initMockDB()
 	h := CreateHandler(db)
-	expected := []Expense{
-		{
-			ID:     1,
-			Amount: 89,
-			Note:   "no discount",
-			Tags:   []string{"beverage"},
-			Title:  "apple smoothie",
-		},
+	expected := Expense{
+		ID:     1,
+		Amount: 89,
+		Note:   "no discount",
+		Tags:   []string{"beverage"},
+		Title:  "apple smoothie",
 	}
 	e := echo.New()
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
@@ -43,10 +41,10 @@ func TestGetExpenseByID(t *testing.T) {
 	c.SetParamValues("1")
 
 	// Assertions
-	if assert.NoError(t, h.GetExpenses(c)) {
-		var result []Expense
+	if assert.NoError(t, h.GetExpenseByID(c)) {
+		var result Expense
 		json.NewDecoder(rec.Body).Decode(&result)
 		assert.Equal(t, http.StatusOK, rec.Code)
-		assert.ElementsMatch(t, expected, result)
+		assert.Equal(t, expected, result)
 	}
 }
