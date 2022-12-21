@@ -6,6 +6,10 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type Handler struct {
+	db DB
+}
+
 func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		if len(c.Request().Header.Values("Authorization")) == 0 {
@@ -19,9 +23,15 @@ func AuthMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
-func CreateRoute(app *echo.Echo) {
+func CreateHandler(db DB) Handler {
+	return Handler{
+		db: db,
+	}
+}
+
+func CreateRoute(app *echo.Echo, handler Handler) {
 	app.POST("/expenses", AddExpense)
 	app.GET("/expenses/:id", GetExpenseByID)
 	app.PUT("/expenses/:id", UpdateExpense)
-	app.GET("/expenses", GetExpenses)
+	app.GET("/expenses", handler.GetExpenses)
 }

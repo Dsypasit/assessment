@@ -13,12 +13,13 @@ import (
 )
 
 func main() {
-	expense.InitDB()
-	e := echo.New()
+	db := expense.InitDBTemp()
+	handler := expense.CreateHandler(db)
 
+	e := echo.New()
 	e.Use(expense.AuthMiddleware)
 
-	expense.CreateRoute(e)
+	expense.CreateRoute(e, handler)
 
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, os.Interrupt, syscall.SIGTERM)
