@@ -21,7 +21,10 @@ func GetExpenses(c echo.Context) error {
 	var expenses []Expense
 	for rows.Next() {
 		var ex Expense
-		rows.Scan(&ex.ID, &ex.Title, &ex.Amount, &ex.Note, pq.Array(&ex.Note))
+		err := rows.Scan(&ex.ID, &ex.Title, &ex.Amount, &ex.Note, pq.Array(&ex.Note))
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, "can't scan row of information")
+		}
 		expenses = append(expenses, ex)
 	}
 
