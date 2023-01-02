@@ -13,12 +13,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func (m MockDB) Create(ex *Expense) error {
-	ex.ID = 1
+func (m MockDB) Update(id int, ex Expense) error {
 	return nil
 }
 
-func TestAddExpense(t *testing.T) {
+func TestUpdateExpense(t *testing.T) {
 	db := initMockDB()
 	h := CreateHandler(db)
 	input := Expense{
@@ -36,34 +35,20 @@ func TestAddExpense(t *testing.T) {
 		Tags:   []string{"beverage"},
 		Title:  "apple smoothie",
 	}
-
 	e := echo.New()
-	req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBuffer(inputJson))
+	req := httptest.NewRequest(http.MethodGet, "/", bytes.NewBuffer(inputJson))
 	req.Header.Add("Content-type", "application/json")
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
+	c.SetPath("/expenses/:id")
+	c.SetParamNames("id")
+	c.SetParamValues("1")
 
 	// Assertions
-	if assert.NoError(t, h.AddExpense(c)) {
+	if assert.NoError(t, h.UpdateExpense(c)) {
 		var result Expense
 		json.NewDecoder(rec.Body).Decode(&result)
-		assert.Equal(t, http.StatusCreated, rec.Code)
+		assert.Equal(t, http.StatusOK, rec.Code)
 		assert.Equal(t, expected, result)
-	}
-}
-
-func TestAddExpenseContentTypeError(t *testing.T) {
-	db := initMockDB()
-	h := CreateHandler(db)
-	e := echo.New()
-	req := httptest.NewRequest(http.MethodPost, "/", nil)
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
-
-	// Assertions
-	if assert.NoError(t, h.AddExpense(c)) {
-		var result Expense
-		json.NewDecoder(rec.Body).Decode(&result)
-		assert.Equal(t, http.StatusBadRequest, rec.Code)
 	}
 }
