@@ -55,7 +55,7 @@ func request(method, url string, body io.Reader) *Response {
 	return &Response{res, err}
 }
 
-func TestAddExpense(t *testing.T) {
+func TestAddExpenseIT(t *testing.T) {
 	body := bytes.NewBufferString(`
 {
 "title": "strawberry smoothie",
